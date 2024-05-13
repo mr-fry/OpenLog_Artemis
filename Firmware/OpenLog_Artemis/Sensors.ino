@@ -588,7 +588,6 @@ void gatherDeviceValues(char * sdOutputData, size_t lenData)
             }
           }
           break;
-
         case DEVICE_VOC_CCS811:
           {
             CCS811 *nodeDevice = (CCS811 *)temp->classPtr;
@@ -1036,6 +1035,43 @@ void gatherDeviceValues(char * sdOutputData, size_t lenData)
             }
           }
           break;
+        case DEVICE_PRESSURE_KellerLD:
+        {
+          KellerLD *nodeDevice = (KellerLD *)temp->classPtr;
+            struct_KellerLD *nodeSetting = (struct_KellerLD *)temp->configPtr;
+            if (nodeSetting->log == true)
+            {
+              if ((nodeSetting->logPressure) || (nodeSetting->logTemperature) || (nodeSetting->logDepth) || (nodeSetting->logAltitude))
+              {
+                nodeDevice->read();
+              }
+              if (nodeSetting->logPressure)
+              {
+                olaftoa(nodeDevice->pressure(nodeSetting->conversion), tempData1, 2, sizeof(tempData1) / sizeof(char));
+                sprintf(tempData, "%s,", tempData1);
+                strlcat(sdOutputData, tempData, lenData);
+              }
+              if (nodeSetting->logTemperature)
+              {
+                olaftoa(nodeDevice->temperature(), tempData1, 2, sizeof(tempData1) / sizeof(char));
+                sprintf(tempData, "%s,", tempData1);
+                strlcat(sdOutputData, tempData, lenData);
+              }
+              if (nodeSetting->logDepth)
+              {
+                olaftoa(nodeDevice->depth(), tempData1, 3, sizeof(tempData1) / sizeof(char));
+                sprintf(tempData, "%s,", tempData1);
+                strlcat(sdOutputData, tempData, lenData);
+              }
+              if (nodeSetting->logAltitude)
+              {
+                olaftoa(nodeDevice->altitude(), tempData1, 2, sizeof(tempData1) / sizeof(char));
+                sprintf(tempData, "%s,", tempData1);
+                strlcat(sdOutputData, tempData, lenData);
+              }
+            }
+        }
+        break;
         case DEVICE_QWIIC_BUTTON:
           {
             QwiicButton *nodeDevice = (QwiicButton *)temp->classPtr;
@@ -1739,6 +1775,22 @@ static void getHelperText(char* helperText, size_t lenText)
         case DEVICE_PRESSURE_MS5837:
           {
             struct_MS5837 *nodeSetting = (struct_MS5837 *)temp->configPtr;
+            if (nodeSetting->log)
+            {
+              if (nodeSetting->logPressure)
+                strlcat(helperText, "mbar,", lenText);
+              if (nodeSetting->logTemperature)
+                strlcat(helperText, "degC,", lenText);
+              if (nodeSetting->logDepth)
+                strlcat(helperText, "depth_m,", lenText);
+              if (nodeSetting->logAltitude)
+                strlcat(helperText, "alt_m,", lenText);
+            }
+          }
+          break;
+        case DEVICE_PRESSURE_KellerLD:
+          {
+            struct_KellerLD *nodeSetting = (struct_KellerLD *)temp->configPtr;
             if (nodeSetting->log)
             {
               if (nodeSetting->logPressure)

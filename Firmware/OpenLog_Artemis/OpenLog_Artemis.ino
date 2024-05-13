@@ -1,3 +1,4 @@
+#include <Apollo3.h>
 /*
   OpenLog Artemis
   By: Nathan Seidle and Paul Clark
@@ -159,10 +160,12 @@
     Corrects the serial token timestamp printing - resolves #192
     The charsReceived debug print ("Total chars received: ") now excludes the length of the timestamps
 
+  v2.9:
+    Add support for the KellerLD series
 */
 
 const int FIRMWARE_VERSION_MAJOR = 2;
-const int FIRMWARE_VERSION_MINOR = 8;
+const int FIRMWARE_VERSION_MINOR = 9;
 
 //Define the OLA board identifier:
 //  This is an int which is unique to this variant of the OLA and which allows us
@@ -326,6 +329,7 @@ icm_20948_DMP_data_t dmpData; // Global storage for the DMP data - extracted fro
 #include "SparkFun_SGP40_Arduino_Library.h" // Click here to get the library: http://librarymanager/All#SparkFun_SGP40
 #include "SparkFun_SDP3x_Arduino_Library.h" // Click here to get the library: http://librarymanager/All#SparkFun_SDP3x
 #include "MS5837.h" // Click here to download the library: https://github.com/sparkfunX/BlueRobotics_MS5837_Library
+#include "KellerLD.h" // Click here to download the library: https://github.com/bluerobotics/BlueRobotics_KellerLD_Library
 #include "SparkFun_Qwiic_Button.h" // Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Button_Switch
 #include "SparkFun_Bio_Sensor_Hub_Library.h" // Click here to get the library: http://librarymanager/All#SparkFun_Bio_Sensor
 #include "SparkFun_ISM330DHCX.h" // Click here to get the library: http://librarymanager/All#SparkFun_6DoF_ISM330DHCX

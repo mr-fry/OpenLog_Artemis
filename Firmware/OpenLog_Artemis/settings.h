@@ -26,6 +26,7 @@ typedef enum
   DEVICE_VOC_SGP40,
   DEVICE_PRESSURE_SDP3X,
   DEVICE_PRESSURE_MS5837,
+  DEVICE_PRESSURE_KellerLD,
   DEVICE_QWIIC_BUTTON,
   DEVICE_BIO_SENSOR_HUB,
   DEVICE_ISM330DHCX,
@@ -338,6 +339,17 @@ struct struct_MS5837 {
   bool logAltitude = true;
   uint8_t model = 1; // Valid options are: 0 (MS5837::MS5837_30BA); 1 (MS5837::MS5837_02BA) and 255 (MS5837::MS5837_UNRECOGNISED)
   float fluidDensity = 997;
+  float conversion = 1.0;
+  unsigned long powerOnDelayMillis = minimumQwiicPowerOnDelay; // Wait for at least this many millis before communicating with this device. Increase if required!
+};
+
+struct struct_KellerLD {
+  bool log = true;
+  bool logPressure = true;
+  bool logTemperature = true;
+  bool logDepth = true;
+  bool logAltitude = true;
+  float fluidDensity = 1029;
   float conversion = 1.0;
   unsigned long powerOnDelayMillis = minimumQwiicPowerOnDelay; // Wait for at least this many millis before communicating with this device. Increase if required!
 };

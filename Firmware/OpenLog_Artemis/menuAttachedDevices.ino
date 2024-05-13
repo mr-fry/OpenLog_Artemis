@@ -357,6 +357,9 @@ void menuAttachedDevices()
           case DEVICE_PRESSURE_MS5837:
             SerialPrintf3("%s MS5837 (BAR30 / BAR02) Pressure Sensor %s\r\n", strDeviceMenu, strAddress);
             break;
+          case DEVICE_PRESSURE_KellerLD:
+            SerialPrintf3("%s KellerLD Pressure Sensor %s\r\n", strDeviceMenu, strAddress);
+            break;
           case DEVICE_QWIIC_BUTTON:
             SerialPrintf3("%s Qwiic Button %s\r\n", strDeviceMenu, strAddress);
             break;
@@ -2796,6 +2799,89 @@ void menuConfigure_MS5837(void *configPtr)
     SerialPrint(F("Sensor Model: "));
     if (sensorSetting->model == 1) SerialPrintln(F("MS5837-02BA / BlueRobotics Bar02: 2 Bar Absolute / 10m Depth"));
     else SerialPrintln(F("MS5837-30BA / BlueRobotics Bar30: 30 Bar Absolute / 300m Depth"));
+
+    SerialPrint(F("1) Sensor Logging: "));
+    if (sensorSetting->log == true) SerialPrintln(F("Enabled"));
+    else SerialPrintln(F("Disabled"));
+
+    if (sensorSetting->log == true)
+    {
+      char tempStr[16];
+
+      SerialPrint(F("2) Log Pressure: "));
+      if (sensorSetting->logPressure == true) SerialPrintln(F("Enabled"));
+      else SerialPrintln(F("Disabled"));
+
+      SerialPrint(F("3) Log Temperature: "));
+      if (sensorSetting->logTemperature == true) SerialPrintln(F("Enabled"));
+      else SerialPrintln(F("Disabled"));
+
+      SerialPrint(F("4) Log Depth: "));
+      if (sensorSetting->logDepth == true) SerialPrintln(F("Enabled"));
+      else SerialPrintln(F("Disabled"));
+
+      SerialPrint(F("5) Log Altitude: "));
+      if (sensorSetting->logAltitude == true) SerialPrintln(F("Enabled"));
+      else SerialPrintln(F("Disabled"));
+
+      olaftoa(sensorSetting->fluidDensity, tempStr, 1, sizeof(tempStr) / sizeof(char));
+      SerialPrintf2("6) Fluid Density (kg/m^3): %s\r\n", tempStr);
+
+      olaftoa(sensorSetting->conversion, tempStr, 3, sizeof(tempStr) / sizeof(char));
+      SerialPrintf2("7) Pressure Conversion Factor: %s\r\n", tempStr);
+    }
+    SerialPrintln(F("x) Exit"));
+
+    int incoming = getNumber(menuTimeout); //Timeout after x seconds
+
+    if (incoming == 1)
+      sensorSetting->log ^= 1;
+    else if (sensorSetting->log == true)
+    {
+      if (incoming == 2)
+        sensorSetting->logPressure ^= 1;
+      else if (incoming == 3)
+        sensorSetting->logTemperature ^= 1;
+      else if (incoming == 4)
+        sensorSetting->logDepth ^= 1;
+      else if (incoming == 5)
+        sensorSetting->logAltitude ^= 1;
+      else if (incoming == 6)
+      {
+        SerialPrint(F("Enter the Fluid Density (kg/m^3): "));
+        double FD = getDouble(menuTimeout); //x second timeout
+        sensorSetting->fluidDensity = (float)FD;
+      }
+      else if (incoming == 7)
+      {
+        SerialPrint(F("Enter the Pressure Conversion Factor: "));
+        double PCF = getDouble(menuTimeout); //x second timeout
+        sensorSetting->conversion = (float)PCF;
+      }
+      else if (incoming == STATUS_PRESSED_X)
+        break;
+      else if (incoming == STATUS_GETNUMBER_TIMEOUT)
+        break;
+      else
+        printUnknown(incoming);
+    }
+    else if (incoming == STATUS_PRESSED_X)
+      break;
+    else if (incoming == STATUS_GETNUMBER_TIMEOUT)
+      break;
+    else
+      printUnknown(incoming);
+  }
+}
+
+void menuConfigure_KellerLD(void *configPtr)
+{
+  struct_KellerLD *sensorSetting = (struct_KellerLD*)configPtr;
+
+  while (1)
+  {
+    SerialPrintln(F(""));
+    SerialPrintln(F("Menu: Configure KellerLD Pressure Sensor"));
 
     SerialPrint(F("1) Sensor Logging: "));
     if (sensorSetting->log == true) SerialPrintln(F("Enabled"));

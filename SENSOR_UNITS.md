@@ -24,6 +24,7 @@ This document summarizes the units used for each sensor measurement.
 - [AHT20 humidity and temperature sensor](#AHT20-humidity-and-temperature-sensor)
 - [SHTC3 humidity and temperature sensor](#SHTC3-humidity-and-temperature-sensor)
 - [LPS28DFW absolute pressure sensor](#LPS28DFW-absolute-pressure-sensor)
+- [KellerLD depth and pressure sensor](#KellerLD-depth-pressure-sensor)
 
 ### Differential Pressure:
 
@@ -193,6 +194,16 @@ Carrier Solution:
 | Altitude | alt_m | Metres |
 
 ---
+## KellerLD depth pressure sensor
+
+| []() | | |
+|---|---|---|
+| Pressure | mbar | millibar |
+| Temperature | degC | Degrees Centigrade |
+| Depth | depth_m | Metres |
+| Altitude | alt_m | Metres |
+---
+
 ## SDP3X differential pressure sensor
 
 | []() | | |

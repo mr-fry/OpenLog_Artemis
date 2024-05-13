@@ -267,6 +267,12 @@ bool addDevice(deviceType_e deviceType, uint8_t address, uint8_t muxAddress, uin
         temp->configPtr = new struct_MS5837;
       }
       break;
+    case DEVICE_PRESSURE_KellerLD:
+      {
+        temp->classPtr = new KellerLD;
+        temp->configPtr = new struct_KellerLD;
+      }
+      break;
     case DEVICE_QWIIC_BUTTON:
       {
         temp->classPtr = new QwiicButton;
@@ -583,6 +589,15 @@ bool beginQwiicDevices()
         {
           MS5837 *tempDevice = (MS5837 *)temp->classPtr;
           struct_MS5837 *nodeSetting = (struct_MS5837 *)temp->configPtr; //Create a local pointer that points to same spot as node does
+          if (nodeSetting->powerOnDelayMillis > qwiicPowerOnDelayMillis) qwiicPowerOnDelayMillis = nodeSetting->powerOnDelayMillis; // Increase qwiicPowerOnDelayMillis if required
+          if (tempDevice->begin(qwiic) == true) //Wire port. Returns true on success.
+            temp->online = true;
+        }
+        break;
+      case DEVICE_PRESSURE_KellerLD:
+        {
+          KellerLD *tempDevice = (KellerLD *)temp->classPtr;
+          struct_KellerLD *nodeSetting = (struct_KellerLD *)temp->configPtr; //Create a local pointer that points to same spot as node does
           if (nodeSetting->powerOnDelayMillis > qwiicPowerOnDelayMillis) qwiicPowerOnDelayMillis = nodeSetting->powerOnDelayMillis; // Increase qwiicPowerOnDelayMillis if required
           if (tempDevice->begin(qwiic) == true) //Wire port. Returns true on success.
             temp->online = true;
@@ -956,6 +971,14 @@ void configureDevice(node * temp)
         sensor->setFluidDensity(sensorSetting->fluidDensity);
       }
       break;
+    case DEVICE_PRESSURE_KellerLD:
+      {
+        KellerLD *sensor = (KellerLD *)temp->classPtr;
+        struct_KellerLD *sensorSetting = (struct_KellerLD *)temp->configPtr;
+        
+        sensor->setFluidDensity(sensorSetting->fluidDensity);
+      }
+      break;
     case DEVICE_QWIIC_BUTTON:
       {
         QwiicButton *sensor = (QwiicButton *)temp->classPtr;
@@ -1166,6 +1189,9 @@ FunctionPointer getConfigFunctionPtr(uint8_t nodeNumber)
     case DEVICE_PRESSURE_MS5837:
       ptr = (FunctionPointer)menuConfigure_MS5837;
       break;
+    case DEVICE_PRESSURE_KellerLD:
+      ptr = (FunctionPointer)menuConfigure_KellerLD;
+      break;
     case DEVICE_QWIIC_BUTTON:
       ptr = (FunctionPointer)menuConfigure_QWIIC_BUTTON;
       break;
@@ -1322,6 +1348,7 @@ void swap(struct node * a, struct node * b)
 #define ADR_SNGCJA5 0x33
 #define ADR_AHT20 0x38
 #define ADR_MS8607 0x40 //Humidity portion of the MS8607 sensor
+#define ADR_KellerLD 0x40
 #define ADR_UBLOX 0x42 //But can be set to any address
 #define ADR_ADS122C04 0x45 //Alternates: 0x44, 0x41 and 0x40
 #define ADR_TMP117 0x48 //Alternates: 0x49, 0x4A, and 0x4B
@@ -1445,6 +1472,10 @@ deviceType_e testDevice(uint8_t i2cAddress, uint8_t muxAddress, uint8_t portNumb
         SFE_ADS122C04 sensor1;
         if (sensor1.begin(i2cAddress, qwiic) == true) //Address, Wire port
           return (DEVICE_ADC_ADS122C04);
+        
+        KellerLD sensor2;
+        if (sensor2.begin(qwiic) == true) //Address, Wire port --> Update
+          return (DEVICE_PRESSURE_KellerLD);
       }
       break;
     case 0x41:
@@ -1948,6 +1979,9 @@ const char* getDeviceName(deviceType_e deviceNumber)
       break;
     case DEVICE_PRESSURE_MS5837:
       return "Pressure-MS5837";
+      break;
+    case DEVICE_PRESSURE_KellerLD:
+      return "Pressure-KellerLD";
       break;
     case DEVICE_QWIIC_BUTTON:
       return "Qwiic_Button";
