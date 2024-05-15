@@ -54,6 +54,9 @@ WORKDIR /root/Arduino/libraries
 RUN curl -L https://github.com/bluerobotics/BlueRobotics_MS5837_Library/archive/refs/heads/master.zip -o ms5837.zip
 RUN unzip ms5837.zip
 
+# Add BlueRobotics_KellerLD_Library from git
+RUN curl -L https://github.com/mr-fry/BlueRobotics_KellerLD_Library/archive/refs/heads/feature/OpenLogArtemis.zip -o KellerLD.zip
+RUN unzip KellerLD.zip
 WORKDIR /work
 
 ADD . .
